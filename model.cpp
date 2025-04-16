@@ -90,16 +90,116 @@ void getValidMoves(GameModel &model, Moves &validMoves)
 {
     // To-do: your code goes here...
 
+    enum Positions
+    {
+        UPPER_LEFT,
+        UPPER_MIDDLE,
+        UPPER_RIGHT,
+        MIDDLE_LEFT,
+        MIDDLE_RIGHT,
+        LOWER_LEFT,
+        LOWER_MIDDLE,
+        LOWER_RIGHT
+    };
+    /*
+    PLAYER_BLACK = 0     PIECE_BLACK = 1
+    PLAYER_WHITE = 1     PIECE_WHITE = 2
+    --> color de la pieza = color del jugador + 1
+
+    Si el color d la pieza no es vacio ni el actual, entonces es el color del contrincante.
+    */
+    validMoves.erase(validMoves.begin(), validMoves.end());
     for (int y = 0; y < BOARD_SIZE; y++)
         for (int x = 0; x < BOARD_SIZE; x++)
         {
             Square move = {x, y};
 
-            // +++ TEST
-            // Lists all empty squares...
-            if (getBoardPiece(model, move) == PIECE_EMPTY)
-                validMoves.push_back(move);
-            // --- TEST
+            /*
+            Se analiza la "siguiente pieza" hasta encontrar una ficha del color del jugador o vacío o irse del tablero.
+            Donde esta esa "siguiente pieza" depende del caso del switch.
+            */
+            if (getBoardPiece(model, {y,x}) == getCurrentPlayer(model) + 1) {
+                for (int lookAround = UPPER_LEFT; lookAround <= LOWER_RIGHT; lookAround++) {
+                    int i, analizedPiece;
+
+                    switch (lookAround) {
+                    case UPPER_LEFT:
+                        for (i=1; (analizedPiece=getBoardPiece(model, {x-i, y-i})) != PIECE_EMPTY && 
+                                   analizedPiece != getCurrentPlayer(model) + 1 &&
+                                    isSquareValid({x-i, y-i});
+                             i++);
+                        
+                        if (isSquareValid({ x - i, y - i }) && analizedPiece == PIECE_EMPTY && i > 1)
+                            validMoves.push_back({ x - i, y - i });
+                        break;
+                    
+                    case UPPER_MIDDLE:
+                        for (i = 1; (analizedPiece = getBoardPiece(model, {x-i, y})) != PIECE_EMPTY &&
+                                     analizedPiece != getCurrentPlayer(model) + 1 &&
+                                     isSquareValid({ x - i, y });
+                            i++);
+
+                        if (isSquareValid({x-i, y}) && analizedPiece == PIECE_EMPTY && i > 1)
+                            validMoves.push_back({ x - i, y });
+                        break;
+
+                    case UPPER_RIGHT:
+                        for (i = 1; (analizedPiece = getBoardPiece(model, { x - i, y+i })) != PIECE_EMPTY &&
+                                     analizedPiece != getCurrentPlayer(model) + 1 &&
+                                     isSquareValid({ x - i, y + i });
+                            i++);
+
+                        if (isSquareValid({ x - i, y+i }) && analizedPiece == PIECE_EMPTY && i > 1)
+                            validMoves.push_back({ x - i, y + i });
+                        break;
+                    case MIDDLE_LEFT:
+                        for (i = 1; (analizedPiece = getBoardPiece(model, { x, y-i })) != PIECE_EMPTY &&
+                                     analizedPiece != getCurrentPlayer(model) + 1 &&
+                                     isSquareValid({ x, y - i });
+                            i++);
+
+                        if (isSquareValid({ x,y-i }) && analizedPiece == PIECE_EMPTY && i > 1)
+                            validMoves.push_back({ x,y - i });
+                        break;
+                    case MIDDLE_RIGHT:
+                        for (i = 1; (analizedPiece = getBoardPiece(model, { x, y+i })) != PIECE_EMPTY &&
+                                     analizedPiece != getCurrentPlayer(model) + 1 &&
+                                     isSquareValid({ x, y + i });
+                            i++);
+
+                        if (isSquareValid({ x , y+i }) && analizedPiece == PIECE_EMPTY && i > 1)
+                            validMoves.push_back({ x , y+i });
+                        break;
+                    case LOWER_LEFT:
+                        for (i = 1; (analizedPiece = getBoardPiece(model, { x + i, y - i })) != PIECE_EMPTY &&
+                                     analizedPiece != getCurrentPlayer(model) + 1 &&
+                                     isSquareValid({ x + i, y - i });
+                            i++);
+
+                        if (isSquareValid({ x + i, y-i }) && analizedPiece == PIECE_EMPTY && i > 1)
+                            validMoves.push_back({ x + i, y - i });
+                        break;
+                    case LOWER_MIDDLE:
+                        for (i = 1; (analizedPiece = getBoardPiece(model, { x + i, y })) != PIECE_EMPTY &&
+                                     analizedPiece != getCurrentPlayer(model) + 1 &&
+                                     isSquareValid({ x + i, y });
+                            i++);
+
+                        if (isSquareValid({ x + i, y }) && analizedPiece == PIECE_EMPTY && i > 1)
+                            validMoves.push_back({ x + i, y });
+                        break;
+                    case LOWER_RIGHT:
+                        for (i = 1; (analizedPiece = getBoardPiece(model, { x + i, y+i })) != PIECE_EMPTY &&
+                                     analizedPiece != getCurrentPlayer(model) + 1 &&
+                                     isSquareValid({ x + i, y+i });
+                            i++);
+
+                        if (isSquareValid({ x + i, y+i }) && analizedPiece == PIECE_EMPTY && i > 1)
+                            validMoves.push_back({ x + i, y + i });
+                        break;
+                    }
+                }
+            }
         }
 }
 
