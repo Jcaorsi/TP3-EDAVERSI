@@ -52,8 +52,10 @@ bool updateView(GameModel &model)
                 for (auto move : validMoves)
                 {
                     if ((square.x == move.x) &&
-                        (square.y == move.y))
+                        (square.y == move.y) {
                         playMove(model, square);
+                        break;//To-do: delete break.
+                    }
                 }
             }
         }
