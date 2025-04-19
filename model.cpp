@@ -215,6 +215,7 @@ bool playMove(GameModel &model, Square move)
 
     // To-do: your code goes here...
 
+
     // Update timer
     double currentTime = GetTime();
     model.playerTime[model.currentPlayer] += currentTime - model.turnTimer;
