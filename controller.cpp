@@ -53,7 +53,6 @@ bool updateView(GameModel &model)
                     if ((square.x == move.x) &&
                         (square.y == move.y)) {
                         playMove(model, square);
-                        break;//To-do: delete break.
                     }
                 }
             }
