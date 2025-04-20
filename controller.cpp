@@ -6,7 +6,6 @@
  */
 
 #include <algorithm>
-
 #include "raylib.h"
 
 #include "ai.h"
@@ -54,9 +53,14 @@ bool updateView(GameModel &model)
                     if ((square.x == move.x) &&
                         (square.y == move.y)) {
                         playMove(model, square);
+<<<<<<< HEAD
                         break;
                     }
                         
+=======
+                        break;//To-do: delete break.
+                    }
+>>>>>>> 0035b3ae53265a0de82718e2b1b949d0da685f34
                 }
             }
         }
@@ -64,6 +68,7 @@ bool updateView(GameModel &model)
     else
     {
         // AI player
+        WaitTime(0.5);
         Square square = getBestMove(model);
 
         playMove(model, square);

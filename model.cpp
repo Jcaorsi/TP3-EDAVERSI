@@ -11,6 +11,7 @@
 
 enum Positions
 {
+<<<<<<< HEAD
 	UPPER_LEFT,
 	UPPER_MIDDLE,
 	UPPER_RIGHT,
@@ -21,6 +22,17 @@ enum Positions
 	LOWER_RIGHT
 };
 
+=======
+    UPPER_LEFT,
+    UPPER_MIDDLE,
+    UPPER_RIGHT,
+    MIDDLE_LEFT,
+    MIDDLE_RIGHT,
+    LOWER_LEFT,
+    LOWER_MIDDLE,
+    LOWER_RIGHT
+};
+>>>>>>> 0035b3ae53265a0de82718e2b1b949d0da685f34
 void initModel(GameModel &model)
 {
     model.gameOver = true;
@@ -100,8 +112,15 @@ bool isSquareValid(Square square)
 
 void getValidMoves(GameModel &model, Moves &validMoves)
 {
-    // To-do: your code goes here...
+    Piece playerPiece =
+	    (getCurrentPlayer(model) == PLAYER_WHITE)
+	    ? PIECE_WHITE
+	    : PIECE_BLACK;
+    Piece opponentPiece = (playerPiece == PIECE_WHITE)
+        ? PIECE_BLACK
+        : PIECE_WHITE;
 
+<<<<<<< HEAD
     /*
     PLAYER_BLACK = 0     PIECE_BLACK = 1
     PLAYER_WHITE = 1     PIECE_WHITE = 2
@@ -115,13 +134,17 @@ void getValidMoves(GameModel &model, Moves &validMoves)
 		(getCurrentPlayer(model) == PLAYER_WHITE)
 		? PIECE_WHITE
 		: PIECE_BLACK;
+=======
+>>>>>>> 0035b3ae53265a0de82718e2b1b949d0da685f34
     //validMoves.clear();
     for (int y = 0; y < BOARD_SIZE; y++)
+    {
         for (int x = 0; x < BOARD_SIZE; x++)
         {
-            Square move = {x, y};
+            Square move = { x, y };
 
             /*
+<<<<<<< HEAD
             Se analiza la "siguiente pieza" hasta encontrar una ficha del color del jugador o vacío o irse del tablero.
             Donde esta esa "siguiente pieza" depende del caso del switch.
             */
@@ -205,9 +228,69 @@ void getValidMoves(GameModel &model, Moves &validMoves)
 							validMoves.push_back({ x + i, y + i });
 						break;
 					}
+=======
+            Si la pieza actual esta vacia, se fija en las de alrededor a ver si hay alguna del oponente. Si la encuentra,
+            avanza en esa direccion (determinada por el switch) siempre y cuando encuentre fichas del oponente. El lugar
+            vacio analizado resulta ser valido si despues de fichas del oponente encuentra una ficha del jugador de turno.
+            */
+
+            if (getBoardPiece(model, move) == PIECE_EMPTY) {
+
+                /* s de surroundings pues busca fichas del oponente en los "alrededores" d la ficha actual (usamos la letra
+                y no la palabra entera porque es un indice para recorrer otra cosa) */
+                for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
+                    int i = 1; // para avanzar en la direccion s
+                    Square analizedSquare;
+                    Piece analizedPiece = PIECE_EMPTY;
+
+                    do {
+                        switch (s) {
+                        case UPPER_LEFT:
+                            analizedSquare = { x - i, y - i };
+                            break;
+
+                        case UPPER_MIDDLE:
+                            analizedSquare = { x, y - i };
+                            break;
+
+                        case UPPER_RIGHT:
+                            analizedSquare = { x + i, y - i };
+                            break;
+
+                        case MIDDLE_LEFT:
+                            analizedSquare = { x - i, y };
+                            break;
+                        case MIDDLE_RIGHT:
+                            analizedSquare = { x + i, y };
+                            break;
+
+                        case LOWER_LEFT:
+                            analizedSquare = { x - i, y + i };
+                            break;
+
+                        case LOWER_MIDDLE:
+                            analizedSquare = { x, y + i };
+                            break;
+                        case LOWER_RIGHT:
+                            analizedSquare = { x + i, y + i };
+                            break;
+                        }
+                        i++;
+                    } while ( isSquareValid(analizedSquare) &&
+                              (analizedPiece = getBoardPiece(model, analizedSquare)) == opponentPiece);
+
+                    /* me interesa ver si analizedPiece es mia solo si encontre al menos una pieza de mi rival,
+                    es decir si avance al menos una vez. Al final de la primera pasada por el do, i=2 */
+                    if (analizedPiece == playerPiece && i > 2)
+                    {
+                        validMoves.push_back(move);
+                        s = LOWER_RIGHT + 1; //para que salga del for y avance a evaluar el siguiente square
+                    }
+>>>>>>> 0035b3ae53265a0de82718e2b1b949d0da685f34
                 }
             }
         }
+    }
 }
 
 bool playMove(GameModel &model, Square move)
@@ -225,6 +308,7 @@ bool playMove(GameModel &model, Square move)
 		(getCurrentPlayer(model) == PLAYER_WHITE)
 		? PIECE_BLACK
 		: PIECE_WHITE;
+<<<<<<< HEAD
 	for (int lookAround = UPPER_LEFT; lookAround <= LOWER_RIGHT; lookAround++) {
 			int i, analizedPiece, t;
 			switch (lookAround) {
@@ -312,6 +396,97 @@ bool playMove(GameModel &model, Square move)
 				break;
 			}
 		}
+=======
+
+	for (int lookAround = UPPER_LEFT; lookAround <= LOWER_RIGHT; lookAround++) {
+        int i, analizedPiece, t;
+        switch (lookAround) {
+        case UPPER_LEFT:
+            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == enemyPiece &&
+                isSquareValid({ move.x - i, move.y - i });
+                i++);
+
+            if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == piece && i > 1)
+                for (t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x - t, move.y - t }, piece);
+                }
+            break;
+
+        case UPPER_MIDDLE:
+            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x, move.y - i })) == enemyPiece &&
+                isSquareValid({ move.x, move.y - i });
+                i++);
+
+            if (isSquareValid({ move.x, move.y - i }) && analizedPiece == piece && i > 1)
+                for (t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x, move.y - t }, piece);
+                }
+            break;
+
+        case UPPER_RIGHT:
+            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y - i })) == enemyPiece &&
+                isSquareValid({ move.x + i, move.y - i });
+                i++);
+
+            if (isSquareValid({ move.x + i, move.y - i }) && analizedPiece == piece && i > 1)
+                for (t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x + t, move.y - t }, piece);
+                }
+            break;
+        case MIDDLE_LEFT:
+            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y })) == enemyPiece &&
+                isSquareValid({ move.x - i, move.y });
+                i++);
+
+            if (isSquareValid({ move.x - i, move.y }) && analizedPiece == piece && i > 1)
+                for (t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x - t, move.y }, piece);
+                }
+            break;
+        case MIDDLE_RIGHT:
+            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y })) == enemyPiece &&
+                isSquareValid({ move.x + i, move.y });
+                i++);
+
+            if (isSquareValid({ move.x + i, move.y }) && analizedPiece == piece && i > 1)
+                for (t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x + t, move.y }, piece);
+                }
+            break;
+        case LOWER_LEFT:
+            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y + i })) == enemyPiece &&
+                isSquareValid({ move.x - i, move.y + i });
+                i++);
+
+            if (isSquareValid({ move.x - i, move.y + i }) && analizedPiece == piece && i > 1)
+                for (t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x - t, move.y + t }, piece);
+                }
+            break;
+        case LOWER_MIDDLE:
+            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x, move.y + i })) == enemyPiece &&
+                isSquareValid({ move.x, move.y + i });
+                i++);
+
+            if (isSquareValid({ move.x, move.y + i }) && analizedPiece == piece && i > 1)
+                for (t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x, move.y + t }, piece);
+                }
+            break;
+        case LOWER_RIGHT:
+            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y + i })) == enemyPiece &&
+                isSquareValid({ move.x + i, move.y + i });
+                i++);
+
+            if (isSquareValid({ move.x + i, move.y + i }) && analizedPiece == piece && i > 1)
+                for (t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x + t, move.y + t }, piece);
+                }
+            break;
+        }
+	}
+
+>>>>>>> 0035b3ae53265a0de82718e2b1b949d0da685f34
 
     // Update timer
     double currentTime = GetTime();
