@@ -12,6 +12,14 @@
 #include "view.h"
 #include "controller.h"
 
+static void updateTimer(GameModel& model)
+{
+    // Update player timer
+    double currentTime = GetTime();
+    model.playerTime[model.currentPlayer] += currentTime - model.turnTimer;
+    model.turnTimer = currentTime;
+}
+
 bool updateView(GameModel &model)
 {
     if (WindowShouldClose())
@@ -53,6 +61,7 @@ bool updateView(GameModel &model)
                     if ((square.x == move.x) &&
                         (square.y == move.y)) {
                         playMove(model, square);
+						updateTimer(model);
                     }
                 }
             }
@@ -65,6 +74,8 @@ bool updateView(GameModel &model)
         Square square = getBestMove(model);
 
         playMove(model, square);
+		updateTimer(model);
+
     }
 
     if ((IsKeyDown(KEY_LEFT_ALT) ||

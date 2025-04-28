@@ -170,7 +170,7 @@ void getValidMoves(GameModel &model, Moves &validMoves)
                     if (analizedPiece == playerPiece && i > 2)
                     {
                         validMoves.push_back(move);
-                        s = LOWER_RIGHT + 1; //para que salga del for y avance a evaluar el siguiente square
+                        break; //para que salga del for y avance a evaluar el siguiente square
                     }
                 }
             }
@@ -180,113 +180,99 @@ void getValidMoves(GameModel &model, Moves &validMoves)
 
 bool playMove(GameModel &model, Square move)
 {
-    // Set game piece
-    Piece piece =
+    Piece playerPiece =
         (getCurrentPlayer(model) == PLAYER_WHITE)
-            ? PIECE_WHITE
-            : PIECE_BLACK;
+        ? PIECE_WHITE
+        : PIECE_BLACK;
 
-    setBoardPiece(model, move, piece);
+    setBoardPiece(model, move, playerPiece);
 
-    // To-do: your code goes here...
-	Piece enemyPiece =
-		(getCurrentPlayer(model) == PLAYER_WHITE)
-		? PIECE_BLACK
-		: PIECE_WHITE;
+    Piece opponentPiece = (playerPiece == PIECE_WHITE)
+        ? PIECE_BLACK
+        : PIECE_WHITE;
 
 	for (int lookAround = UPPER_LEFT; lookAround <= LOWER_RIGHT; lookAround++) {
         int i, analizedPiece, t;
-        switch (lookAround) {
-        case UPPER_LEFT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == enemyPiece &&
-                isSquareValid({ move.x - i, move.y - i });
-                i++);
+        for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
+            int i = 1; // para avanzar en la direccion s
+            Square analizedSquare;
+            Piece analizedPiece = PIECE_EMPTY;
 
-            if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x - t, move.y - t }, piece);
+            do {
+                switch (s) {
+                case UPPER_LEFT:
+                    analizedSquare = { move.x - i, move.y - i };
+                    break;
+
+                case UPPER_MIDDLE:
+                    analizedSquare = { move.x, move.y - i };
+                    break;
+
+                case UPPER_RIGHT:
+                    analizedSquare = { move.x + i, move.y - i };
+                    break;
+
+                case MIDDLE_LEFT:
+                    analizedSquare = { move.x - i, move.y };
+                    break;
+                case MIDDLE_RIGHT:
+                    analizedSquare = { move.x + i, move.y };
+                    break;
+
+                case LOWER_LEFT:
+                    analizedSquare = { move.x - i, move.y + i };
+                    break;
+
+                case LOWER_MIDDLE:
+                    analizedSquare = { move.x, move.y + i };
+                    break;
+                case LOWER_RIGHT:
+                    analizedSquare = { move.x + i, move.y + i };
+                    break;
                 }
-            break;
+                i++;
+            } while (isSquareValid(analizedSquare) &&
+                (analizedPiece = getBoardPiece(model, analizedSquare)) == opponentPiece);
 
-        case UPPER_MIDDLE:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x, move.y - i })) == enemyPiece &&
-                isSquareValid({ move.x, move.y - i });
-                i++);
+            if (analizedPiece == playerPiece && i > 2)
+            {
 
-            if (isSquareValid({ move.x, move.y - i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x, move.y - t }, piece);
+                for (int t = 1; t != i; ++t) {
+                    switch (s) {
+                    case UPPER_LEFT:
+                        setBoardPiece(model, { move.x - t, move.y - t }, playerPiece);
+                        break;
+
+                    case UPPER_MIDDLE:
+                        setBoardPiece(model, { move.x , move.y - t }, playerPiece);
+                        break;
+
+                    case UPPER_RIGHT:
+                        setBoardPiece(model, { move.x + t, move.y - t }, playerPiece);
+                        break;
+
+                    case MIDDLE_LEFT:
+                        setBoardPiece(model, { move.x - t, move.y }, playerPiece);
+                        break;
+                    case MIDDLE_RIGHT:
+                        setBoardPiece(model, { move.x + t, move.y }, playerPiece);
+                        break;
+
+                    case LOWER_LEFT:
+                        setBoardPiece(model, { move.x - t, move.y + t }, playerPiece);
+                        break;
+
+                    case LOWER_MIDDLE:
+                        setBoardPiece(model, { move.x, move.y + t }, playerPiece);
+                        break;
+                    case LOWER_RIGHT:
+                        setBoardPiece(model, { move.x + t, move.y + t }, playerPiece);
+                        break;
+                    }
                 }
-            break;
-
-        case UPPER_RIGHT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y - i })) == enemyPiece &&
-                isSquareValid({ move.x + i, move.y - i });
-                i++);
-
-            if (isSquareValid({ move.x + i, move.y - i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x + t, move.y - t }, piece);
-                }
-            break;
-        case MIDDLE_LEFT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y })) == enemyPiece &&
-                isSquareValid({ move.x - i, move.y });
-                i++);
-
-            if (isSquareValid({ move.x - i, move.y }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x - t, move.y }, piece);
-                }
-            break;
-        case MIDDLE_RIGHT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y })) == enemyPiece &&
-                isSquareValid({ move.x + i, move.y });
-                i++);
-
-            if (isSquareValid({ move.x + i, move.y }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x + t, move.y }, piece);
-                }
-            break;
-        case LOWER_LEFT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y + i })) == enemyPiece &&
-                isSquareValid({ move.x - i, move.y + i });
-                i++);
-
-            if (isSquareValid({ move.x - i, move.y + i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x - t, move.y + t }, piece);
-                }
-            break;
-        case LOWER_MIDDLE:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x, move.y + i })) == enemyPiece &&
-                isSquareValid({ move.x, move.y + i });
-                i++);
-
-            if (isSquareValid({ move.x, move.y + i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x, move.y + t }, piece);
-                }
-            break;
-        case LOWER_RIGHT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y + i })) == enemyPiece &&
-                isSquareValid({ move.x + i, move.y + i });
-                i++);
-
-            if (isSquareValid({ move.x + i, move.y + i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x + t, move.y + t }, piece);
-                }
-            break;
+            }
         }
 	}
-
-
-    // Update timer
-    double currentTime = GetTime();
-    model.playerTime[model.currentPlayer] += currentTime - model.turnTimer;
-    model.turnTimer = currentTime;
 
     // Swap player
     model.currentPlayer =
