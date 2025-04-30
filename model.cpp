@@ -280,6 +280,14 @@ bool playMove(GameModel &model, Square move)
                 }
             break;
         }
+        for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == enemyPiece &&
+            isSquareValid({ move.x - i, move.y - i });
+            i++);
+
+        if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == piece && i > 1)
+            for (t = 1; t != i; ++t) {
+                setBoardPiece(model, { move.x - t, move.y - t }, piece);
+            }
 	}
 
 
@@ -302,4 +310,79 @@ bool playMove(GameModel &model, Square move)
         model.gameOver = true;
 
     return true;
+}
+
+#define MAX_LEVELS 6
+
+int level = 1; // xq el nodo raiz es el nivel 1. Capaz podemos usar una macro?
+
+void minmax(TreeNode* node)
+{
+    if (gameOver || level == MAX_LEVELS) {
+        i--;
+        return;
+    }
+    getValidMoves(...);
+    for (auto move : validMoves) {
+        constructor ?
+            level++;
+        if (si es el primer elemento de validMoves) //como chequeariamos esto?
+            buildTree(node->firstChild = nodoNuevo);
+        else
+            buildTree(node->nextSibling = nodoNuevo);
+    }
+}
+
+// A simple C++ program to find
+// maximum score that
+// maximizing player can get.
+#include<bits/stdc++.h>
+using namespace std;
+
+// Returns the optimal value a maximizer can obtain.
+// depth is current depth in game tree.
+// nodeIndex is index of current node in scores[].
+// isMax is true if current move is
+// of maximizer, else false
+// scores[] stores leaves of Game tree.
+// h is maximum height of Game tree
+int minimax(int depth, int nodeIndex, bool isMax,
+			int scores[], int h)
+{
+	// Terminating condition. i.e
+	// leaf node is reached
+	if (depth == h)
+		return scores[nodeIndex];
+
+	// If current move is maximizer,
+	// find the maximum attainable
+	// value
+	if (isMax)
+	return max(minimax(depth+1, nodeIndex*2, false, scores, h),
+			minimax(depth+1, nodeIndex*2 + 1, false, scores, h));
+
+	// Else (If current move is Minimizer), find the minimum
+	// attainable value
+	else
+		return min(minimax(depth+1, nodeIndex*2, true, scores, h),
+			minimax(depth+1, nodeIndex*2 + 1, true, scores, h));
+}
+
+// A utility function to find Log n in base 2
+int log2(int n)
+{
+return (n==1)? 0 : 1 + log2(n/2);
+}
+
+// Driver code
+int main()
+{
+	// The number of elements in scores must be
+	// a power of 2.
+	int scores[] = {3, 5, 2, 9, 12, 5, 23, 23};
+	int n = sizeof(scores)/sizeof(scores[0]);
+	int h = log2(n);
+	int res = minimax(0, 0, true, scores, h);
+	cout << "The optimal value is : " << res << endl;
+	return 0;
 }
