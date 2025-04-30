@@ -79,12 +79,12 @@ double getTimer(GameModel &model, Player player)
     return model.playerTime[player] + turnTime;
 }
 
-Piece getBoardPiece(GameModel &model, Square square)
+char getBoardPiece(GameModel &model, Square square)
 {
     return model.board[square.y][square.x];
 }
 
-void setBoardPiece(GameModel &model, Square square, Piece piece)
+void setBoardPiece(GameModel &model, Square square, char piece)
 {
     model.board[square.y][square.x] = piece;
 }
@@ -97,17 +97,16 @@ bool isSquareValid(Square square)
            (square.y < BOARD_SIZE);
 }
 
-void getValidMoves(GameModel &model, Moves &validMoves)
+void getValidMoves(GameModel& model, Moves& validMoves)
 {
-    Piece playerPiece =
-	    (getCurrentPlayer(model) == PLAYER_WHITE)
-	    ? PIECE_WHITE
-	    : PIECE_BLACK;
-    Piece opponentPiece = (playerPiece == PIECE_WHITE)
-        ? PIECE_BLACK
-        : PIECE_WHITE;
+	char playerPiece =
+		(getCurrentPlayer(model) == PLAYER_WHITE)
+		? PIECE_WHITE
+		: PIECE_BLACK;
+	char opponentPiece = (playerPiece == PIECE_WHITE)
+		? PIECE_BLACK
+		: PIECE_WHITE;
 
-    //validMoves.clear();
     for (int y = 0; y < BOARD_SIZE; y++)
     {
         for (int x = 0; x < BOARD_SIZE; x++)
@@ -127,7 +126,7 @@ void getValidMoves(GameModel &model, Moves &validMoves)
                 for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
                     int i = 1; // para avanzar en la direccion s
                     Square analizedSquare;
-                    Piece analizedPiece = PIECE_EMPTY;
+                    char analizedPiece = PIECE_EMPTY;
 
                     do {
                         switch (s) {
@@ -178,25 +177,26 @@ void getValidMoves(GameModel &model, Moves &validMoves)
     }
 }
 
-bool playMove(GameModel &model, Square move)
+char playMove(GameModel &model, Square move)
 {
-    Piece playerPiece =
+    char currentGain = 0;
+    char playerPiece =
         (getCurrentPlayer(model) == PLAYER_WHITE)
         ? PIECE_WHITE
         : PIECE_BLACK;
 
     setBoardPiece(model, move, playerPiece);
 
-    Piece opponentPiece = (playerPiece == PIECE_WHITE)
+    char opponentPiece = (playerPiece == PIECE_WHITE)
         ? PIECE_BLACK
         : PIECE_WHITE;
 
 	for (int lookAround = UPPER_LEFT; lookAround <= LOWER_RIGHT; lookAround++) {
-        int i, analizedPiece, t;
+
         for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
             int i = 1; // para avanzar en la direccion s
             Square analizedSquare;
-            Piece analizedPiece = PIECE_EMPTY;
+            char analizedPiece = PIECE_EMPTY;
 
             do {
                 switch (s) {
@@ -269,6 +269,8 @@ bool playMove(GameModel &model, Square move)
                         setBoardPiece(model, { move.x + t, move.y + t }, playerPiece);
                         break;
                     }
+                    currentGain++;
+
                 }
             }
         }
@@ -287,5 +289,5 @@ bool playMove(GameModel &model, Square move)
     if (validMoves.size() == 0)
         model.gameOver = true;
 
-    return true;
+    return currentGain;
 }

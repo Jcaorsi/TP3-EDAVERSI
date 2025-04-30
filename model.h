@@ -18,18 +18,40 @@ enum Player
     PLAYER_BLACK,
     PLAYER_WHITE,
 };
-
-enum Piece
+/*
+enum Pieces
 {
     PIECE_EMPTY,
     PIECE_BLACK,
     PIECE_WHITE,
-};
+};*/
+#define PIECE_EMPTY 0
+#define PIECE_BLACK 1
+#define PIECE_WHITE 2
+/*
+//Obtuvimos información sobre la sobrecarga de operadores en C++ en: https://www.geeksforgeeks.org/operator-overloading-cpp/
+struct Piece{
+	char gamePiece;
+
+    bool operator==(int v) const {
+        return gamePiece == static_cast<char>(v);
+    }
+
+    bool operator!=(int v) const {
+        return !(*this == v);
+    }
+
+    Piece& operator=(int v) {
+        gamePiece = static_cast<char>(v);
+        return *this;
+    }
+
+} ;*/
 
 struct Square
 {
-    int x;
-    int y;
+	int x;
+	int y;
 };
 
 #define GAME_INVALID_SQUARE \
@@ -46,7 +68,7 @@ struct GameModel
     double playerTime[2];
     double turnTimer;
 
-    Piece board[BOARD_SIZE][BOARD_SIZE];
+    char board[BOARD_SIZE][BOARD_SIZE];
 
     Player humanPlayer;
 };
@@ -100,7 +122,7 @@ double getTimer(GameModel &model, Player player);
  * @param square The square.
  * @return The piece at the square.
  */
-Piece getBoardPiece(GameModel &model, Square square);
+char getBoardPiece(GameModel &model, Square square);
 
 /**
  * @brief Sets a model's piece.
@@ -109,7 +131,7 @@ Piece getBoardPiece(GameModel &model, Square square);
  * @param square The square.
  * @param piece The piece to be set
  */
-void setBoardPiece(GameModel &model, Square square, Piece piece);
+void setBoardPiece(GameModel &model, Square square, char piece);
 
 /**
  * @brief Checks whether a square is within the board.
@@ -134,6 +156,6 @@ void getValidMoves(GameModel &model, Moves &validMoves);
  * @param square The move.
  * @return Move accepted.
  */
-bool playMove(GameModel &model, Square move);
+char playMove(GameModel &model, Square move);
 
 #endif

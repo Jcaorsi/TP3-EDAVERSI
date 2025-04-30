@@ -25,3 +25,5 @@
 ## Bonus points
 
 [Aquí.]
+
+AVISOS: Pruebo pasar valores int de Pieces a char para optimizar memoria
