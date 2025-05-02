@@ -79,12 +79,12 @@ double getTimer(GameModel &model, Player player)
     return model.playerTime[player] + turnTime;
 }
 
-Piece getBoardPiece(GameModel &model, Square square)
+char getBoardPiece(GameModel &model, Square square)
 {
     return model.board[square.y][square.x];
 }
 
-void setBoardPiece(GameModel &model, Square square, Piece piece)
+void setBoardPiece(GameModel &model, Square square, char piece)
 {
     model.board[square.y][square.x] = piece;
 }
@@ -97,17 +97,16 @@ bool isSquareValid(Square square)
            (square.y < BOARD_SIZE);
 }
 
-void getValidMoves(GameModel &model, Moves &validMoves)
+void getValidMoves(GameModel& model, Moves& validMoves)
 {
-    Piece playerPiece =
-	    (getCurrentPlayer(model) == PLAYER_WHITE)
-	    ? PIECE_WHITE
-	    : PIECE_BLACK;
-    Piece opponentPiece = (playerPiece == PIECE_WHITE)
-        ? PIECE_BLACK
-        : PIECE_WHITE;
+	char playerPiece =
+		(getCurrentPlayer(model) == PLAYER_WHITE)
+		? PIECE_WHITE
+		: PIECE_BLACK;
+	char opponentPiece = (playerPiece == PIECE_WHITE)
+		? PIECE_BLACK
+		: PIECE_WHITE;
 
-    //validMoves.clear();
     for (int y = 0; y < BOARD_SIZE; y++)
     {
         for (int x = 0; x < BOARD_SIZE; x++)
@@ -127,7 +126,7 @@ void getValidMoves(GameModel &model, Moves &validMoves)
                 for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
                     int i = 1; // para avanzar en la direccion s
                     Square analizedSquare;
-                    Piece analizedPiece = PIECE_EMPTY;
+                    char analizedPiece = PIECE_EMPTY;
 
                     do {
                         switch (s) {
@@ -170,7 +169,7 @@ void getValidMoves(GameModel &model, Moves &validMoves)
                     if (analizedPiece == playerPiece && i > 2)
                     {
                         validMoves.push_back(move);
-                        s = LOWER_RIGHT + 1; //para que salga del for y avance a evaluar el siguiente square
+                        break; //para que salga del for y avance a evaluar el siguiente square
                     }
                 }
             }
@@ -178,123 +177,114 @@ void getValidMoves(GameModel &model, Moves &validMoves)
     }
 }
 
-bool playMove(GameModel &model, Square move)
+char playMove(GameModel &model, Square move)
 {
-    // Set game piece
-    Piece piece =
+    char currentGain = 0;
+    char playerPiece =
         (getCurrentPlayer(model) == PLAYER_WHITE)
-            ? PIECE_WHITE
-            : PIECE_BLACK;
+        ? PIECE_WHITE
+        : PIECE_BLACK;
 
-    setBoardPiece(model, move, piece);
+    setBoardPiece(model, move, playerPiece);
 
-    // To-do: your code goes here...
-	Piece enemyPiece =
-		(getCurrentPlayer(model) == PLAYER_WHITE)
-		? PIECE_BLACK
-		: PIECE_WHITE;
+    char opponentPiece = (playerPiece == PIECE_WHITE)
+        ? PIECE_BLACK
+        : PIECE_WHITE;
 
 	for (int lookAround = UPPER_LEFT; lookAround <= LOWER_RIGHT; lookAround++) {
-        int i, analizedPiece, t;
-        switch (lookAround) {
-        case UPPER_LEFT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == enemyPiece &&
-                isSquareValid({ move.x - i, move.y - i });
-                i++);
+        Square analizedSquare;
+        char analizedPiece = PIECE_EMPTY;
 
-            if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x - t, move.y - t }, piece);
+        /* recorre s de surroundings a partir de un lugar vacio, avanza "en la direccion d las piezas
+    del oponente" */
+        for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
+            int i = 1; // para avanzar en la direccion s
+
+            do {
+                switch (s) {
+                case UPPER_LEFT:
+                    analizedSquare = { move.x - i, move.y - i };
+                    break;
+
+                case UPPER_MIDDLE:
+                    analizedSquare = { move.x, move.y - i };
+                    break;
+
+                case UPPER_RIGHT:
+                    analizedSquare = { move.x + i, move.y - i };
+                    break;
+
+                case MIDDLE_LEFT:
+                    analizedSquare = { move.x - i, move.y };
+                    break;
+                case MIDDLE_RIGHT:
+                    analizedSquare = { move.x + i, move.y };
+                    break;
+
+                case LOWER_LEFT:
+                    analizedSquare = { move.x - i, move.y + i };
+                    break;
+
+                case LOWER_MIDDLE:
+                    analizedSquare = { move.x, move.y + i };
+                    break;
+                case LOWER_RIGHT:
+                    analizedSquare = { move.x + i, move.y + i };
+                    break;
                 }
-            break;
+                i++;
+            } while (isSquareValid(analizedSquare) &&
+                (analizedPiece = getBoardPiece(model, analizedSquare)) == opponentPiece);
 
-        case UPPER_MIDDLE:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x, move.y - i })) == enemyPiece &&
-                isSquareValid({ move.x, move.y - i });
-                i++);
+            if (analizedPiece == playerPiece && i > 2)
+            {
+                // t de turn xq voltea las piezas
+                for (int t = 1; t != i; ++t) {
+                    switch (s) {
+                    case UPPER_LEFT:
+                        setBoardPiece(model, { move.x - t, move.y - t }, playerPiece);
+                        break;
 
-            if (isSquareValid({ move.x, move.y - i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x, move.y - t }, piece);
+                    case UPPER_MIDDLE:
+                        setBoardPiece(model, { move.x , move.y - t }, playerPiece);
+                        break;
+
+                    case UPPER_RIGHT:
+                        setBoardPiece(model, { move.x + t, move.y - t }, playerPiece);
+                        break;
+
+                    case MIDDLE_LEFT:
+                        setBoardPiece(model, { move.x - t, move.y }, playerPiece);
+                        break;
+                    case MIDDLE_RIGHT:
+                        setBoardPiece(model, { move.x + t, move.y }, playerPiece);
+                        break;
+
+                    case LOWER_LEFT:
+                        setBoardPiece(model, { move.x - t, move.y + t }, playerPiece);
+                        break;
+
+                    case LOWER_MIDDLE:
+                        setBoardPiece(model, { move.x, move.y + t }, playerPiece);
+                        break;
+                    case LOWER_RIGHT:
+                        setBoardPiece(model, { move.x + t, move.y + t }, playerPiece);
+                        break;
+                    }
+                    currentGain++;
+
                 }
-            break;
-
-        case UPPER_RIGHT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y - i })) == enemyPiece &&
-                isSquareValid({ move.x + i, move.y - i });
-                i++);
-
-            if (isSquareValid({ move.x + i, move.y - i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x + t, move.y - t }, piece);
-                }
-            break;
-        case MIDDLE_LEFT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y })) == enemyPiece &&
-                isSquareValid({ move.x - i, move.y });
-                i++);
-
-            if (isSquareValid({ move.x - i, move.y }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x - t, move.y }, piece);
-                }
-            break;
-        case MIDDLE_RIGHT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y })) == enemyPiece &&
-                isSquareValid({ move.x + i, move.y });
-                i++);
-
-            if (isSquareValid({ move.x + i, move.y }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x + t, move.y }, piece);
-                }
-            break;
-        case LOWER_LEFT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y + i })) == enemyPiece &&
-                isSquareValid({ move.x - i, move.y + i });
-                i++);
-
-            if (isSquareValid({ move.x - i, move.y + i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x - t, move.y + t }, piece);
-                }
-            break;
-        case LOWER_MIDDLE:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x, move.y + i })) == enemyPiece &&
-                isSquareValid({ move.x, move.y + i });
-                i++);
-
-            if (isSquareValid({ move.x, move.y + i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x, move.y + t }, piece);
-                }
-            break;
-        case LOWER_RIGHT:
-            for (i = 1; (analizedPiece = getBoardPiece(model, { move.x + i, move.y + i })) == enemyPiece &&
-                isSquareValid({ move.x + i, move.y + i });
-                i++);
-
-            if (isSquareValid({ move.x + i, move.y + i }) && analizedPiece == piece && i > 1)
-                for (t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x + t, move.y + t }, piece);
-                }
-            break;
-        }
-        for (i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == enemyPiece &&
+            }
+        
+        for (int i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == opponentPiece &&
             isSquareValid({ move.x - i, move.y - i });
             i++);
 
-        if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == piece && i > 1)
-            for (t = 1; t != i; ++t) {
-                setBoardPiece(model, { move.x - t, move.y - t }, piece);
+        if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == playerPiece && i > 1)
+            for (int t = 1; t != i; ++t) {
+                setBoardPiece(model, { move.x - t, move.y - t }, playerPiece);
             }
 	}
-
-
-    // Update timer
-    double currentTime = GetTime();
-    model.playerTime[model.currentPlayer] += currentTime - model.turnTimer;
-    model.turnTimer = currentTime;
 
     // Swap player
     model.currentPlayer =
@@ -310,79 +300,4 @@ bool playMove(GameModel &model, Square move)
         model.gameOver = true;
 
     return true;
-}
-
-#define MAX_LEVELS 6
-
-int level = 1; // xq el nodo raiz es el nivel 1. Capaz podemos usar una macro?
-
-void minmax(TreeNode* node)
-{
-    if (gameOver || level == MAX_LEVELS) {
-        i--;
-        return;
-    }
-    getValidMoves(...);
-    for (auto move : validMoves) {
-        constructor ?
-            level++;
-        if (si es el primer elemento de validMoves) //como chequeariamos esto?
-            buildTree(node->firstChild = nodoNuevo);
-        else
-            buildTree(node->nextSibling = nodoNuevo);
-    }
-}
-
-// A simple C++ program to find
-// maximum score that
-// maximizing player can get.
-#include<bits/stdc++.h>
-using namespace std;
-
-// Returns the optimal value a maximizer can obtain.
-// depth is current depth in game tree.
-// nodeIndex is index of current node in scores[].
-// isMax is true if current move is
-// of maximizer, else false
-// scores[] stores leaves of Game tree.
-// h is maximum height of Game tree
-int minimax(int depth, int nodeIndex, bool isMax,
-			int scores[], int h)
-{
-	// Terminating condition. i.e
-	// leaf node is reached
-	if (depth == h)
-		return scores[nodeIndex];
-
-	// If current move is maximizer,
-	// find the maximum attainable
-	// value
-	if (isMax)
-	return max(minimax(depth+1, nodeIndex*2, false, scores, h),
-			minimax(depth+1, nodeIndex*2 + 1, false, scores, h));
-
-	// Else (If current move is Minimizer), find the minimum
-	// attainable value
-	else
-		return min(minimax(depth+1, nodeIndex*2, true, scores, h),
-			minimax(depth+1, nodeIndex*2 + 1, true, scores, h));
-}
-
-// A utility function to find Log n in base 2
-int log2(int n)
-{
-return (n==1)? 0 : 1 + log2(n/2);
-}
-
-// Driver code
-int main()
-{
-	// The number of elements in scores must be
-	// a power of 2.
-	int scores[] = {3, 5, 2, 9, 12, 5, 23, 23};
-	int n = sizeof(scores)/sizeof(scores[0]);
-	int h = log2(n);
-	int res = minimax(0, 0, true, scores, h);
-	cout << "The optimal value is : " << res << endl;
-	return 0;
 }

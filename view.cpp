@@ -197,9 +197,9 @@ void drawView(GameModel &model)
                 6,
                 DARKGREEN);
 
-            Piece piece = getBoardPiece(model, square);
+            char piece = getBoardPiece(model, square);
 
-            if (piece != PIECE_EMPTY)
+            if (piece != 0)
                 DrawCircle((int)position.x + PIECE_CENTER,
                            (int)position.y + PIECE_CENTER,
                            PIECE_RADIUS,
