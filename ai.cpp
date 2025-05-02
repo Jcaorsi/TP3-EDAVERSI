@@ -19,32 +19,28 @@
 class TreeNode {
 public:
 	GameModel model;
-	char aiGain;
-	char level;
+	int aiGain;
+	int level;
     std::vector<Square> validMoves;
-    char alpha;
-    char beta;
+    int alpha;
+    int beta;
     TreeNode* primerHijo;
-    TreeNode* hermanoSiguiente; 
     bool inProcess;
     /* un nodo se considera inProcess cuando su vector de validMoves esta siendo estudiado es decir cuando se estan
        recorriendo sus nodos hijos */
-    char currentGain;
+    char currentGain;  //cantidad de fichas volteadas
+
     // Constructor
-    TreeNode(GameModel model, char valAlpha, char valBeta, TreeNode* primerHijo, TreeNode* hermanoSiguiente, char level, char aiGain, char currentGain)
-            : model(model), alpha(valAlpha), beta(valBeta), primerHijo(primerHijo), hermanoSiguiente(hermanoSiguiente), level(level),
-              aiGain(aiGain), currentGain(currentGain) {} 
+    TreeNode(GameModel model, char valAlpha, char valBeta, TreeNode* primerHijo, char level, char aiGain, char currentGain, bool inProcess)
+            : model(model), alpha(valAlpha), beta(valBeta), primerHijo(primerHijo), level(level),
+              aiGain(aiGain), currentGain(currentGain), inProcess(inProcess) {} 
 
     void agregarHijo(TreeNode* hijo) {
         if (primerHijo == nullptr) {
             primerHijo = hijo;
         }
         else {
-            TreeNode* temp = primerHijo;
-            while (temp->hermanoSiguiente != nullptr) {
-                temp = temp->hermanoSiguiente;
-            }
-            temp->hermanoSiguiente = hijo;
+            perror("Error al agregar nodo hijo");
         }
     }
 };
@@ -53,8 +49,8 @@ Square getBestMove(GameModel& model)
 {
     std::stack<TreeNode*> nodeStack;
 
-    std::vector<Square> validMoves;
-    TreeNode rootNode(model, MINUS_INFINITY, PLUS_INFINITY, nullptr, nullptr, 1, 0, 0);
+    //std::vector<Square> validMoves;
+    TreeNode rootNode(model, MINUS_INFINITY, PLUS_INFINITY, nullptr, 1, 0, 0, false);
     // model, alpha, beta, primerHijo, hermanoSiguiente, level, aiGain, inProcess, currentGain
 
     rootNode.validMoves.clear();
@@ -80,19 +76,17 @@ Square getBestMove(GameModel& model)
         }
         else 
         {
-			returning = true;
+			returning = true; // validMoves esta vacio, es decir ya se recorrieron todas las jugadas validas
         }
 
 		nodeStack.top()->inProcess = true;
 
-		if (nodeStack.top()->level != MAX_LEVELS && !returning)
+		if (nodeStack.top()->level != MAX_LEVELS && !returning) //si no hay mas jugadas validas ni entra
         {
 			nodeStack.top()->agregarHijo(new TreeNode(nodeStack.top()->model, nodeStack.top()->alpha, nodeStack.top()->beta, 
-                                        nullptr, nullptr, nodeStack.top()->level + 1, 0, 0) );
-            
-
-            if (!nodeStack.top()->validMoves.empty())
-    			nodeStack.top()->validMoves.pop_back();
+                                        nullptr, nodeStack.top()->level + 1, 0, 0, false) );
+       
+    	    nodeStack.top()->validMoves.pop_back();
             // ya puse el ulimo validMove del ultimo nodo pusheado en "move", ahora lo borro del vector xq ya no lo necesito
 
 			nodeStack.push(nodeStack.top()->primerHijo);
@@ -100,7 +94,7 @@ Square getBestMove(GameModel& model)
             nodeStack.top()->currentGain = playMove(nodeStack.top()->model, move) + 1;
             //Mas uno porque cuento las volteadas Y la colocada
 
-			if (!nodeStack.top()->inProcess)
+			if (!nodeStack.top()->inProcess) // esto no afecta la logica del codigo PERO genera validMoves aunque este en un nodo hoja
 			{
 				nodeStack.top()->validMoves.clear();
 				getValidMoves(nodeStack.top()->model, nodeStack.top()->validMoves);
@@ -110,6 +104,7 @@ Square getBestMove(GameModel& model)
         {
 			TreeNode* auxNode = nodeStack.top(); //auxNode tiene el hijo
 			nodeStack.pop();
+            nodeStack.top()->primerHijo = NULL;
             if (auxNode->level % 2) 
 			{                        //Caso impar. Nodo final (auxNode) es MAX y el padre (nodeStack.top) es MIN
                 // si el del padre es menor q el del hijo, se lo asigna
@@ -141,11 +136,13 @@ Square getBestMove(GameModel& model)
 
                     if (nodeStack.top()->beta >= nodeStack.top()->alpha)
                     {
-                        nodeStack.top()->level = nodeStack.top()->level > 1 ? MAX_LEVELS : 1;
+                        //nodeStack.top()->level = nodeStack.top()->level > 1 ? MAX_LEVELS : 1; //REVISAR
+                        
                     }
                 }
             }
             delete auxNode;
+            
         }
          
     }

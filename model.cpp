@@ -177,7 +177,7 @@ void getValidMoves(GameModel& model, Moves& validMoves)
     }
 }
 
-char playMove(GameModel &model, Square move)
+char playMove(GameModel& model, Square move)
 {
     char currentGain = 0;
     char playerPiece =
@@ -191,7 +191,7 @@ char playMove(GameModel &model, Square move)
         ? PIECE_BLACK
         : PIECE_WHITE;
 
-	for (int lookAround = UPPER_LEFT; lookAround <= LOWER_RIGHT; lookAround++) {
+    for (int lookAround = UPPER_LEFT; lookAround <= LOWER_RIGHT; lookAround++) {
         Square analizedSquare;
         char analizedPiece = PIECE_EMPTY;
 
@@ -275,29 +275,30 @@ char playMove(GameModel &model, Square move)
 
                 }
             }
-        
-        for (int i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == opponentPiece &&
-            isSquareValid({ move.x - i, move.y - i });
-            i++);
 
-        if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == playerPiece && i > 1)
-            for (int t = 1; t != i; ++t) {
-                setBoardPiece(model, { move.x - t, move.y - t }, playerPiece);
-            }
-	}
+            for (int i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == opponentPiece &&
+                isSquareValid({ move.x - i, move.y - i });
+                i++);
 
-    // Swap player
-    model.currentPlayer =
-        (model.currentPlayer == PLAYER_WHITE)
+            if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == playerPiece && i > 1)
+                for (int t = 1; t != i; ++t) {
+                    setBoardPiece(model, { move.x - t, move.y - t }, playerPiece);
+                }
+        }
+
+        // Swap player
+        model.currentPlayer =
+            (model.currentPlayer == PLAYER_WHITE)
             ? PLAYER_BLACK
             : PLAYER_WHITE;
 
-    // Game over?
-    Moves validMoves;
-    getValidMoves(model, validMoves);
+        // Game over?
+        Moves validMoves;
+        getValidMoves(model, validMoves);
 
-    if (validMoves.size() == 0)
-        model.gameOver = true;
+        if (validMoves.size() == 0)
+            model.gameOver = true;
 
-    return true;
+        return true;
+    }
 }
