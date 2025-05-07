@@ -6,7 +6,7 @@
  */
 
 #include "raylib.h"
-
+#include <stdio.h>
 #include "model.h"
 
 enum Positions
@@ -99,14 +99,15 @@ bool isSquareValid(Square square)
 
 void getValidMoves(GameModel& model, Moves& validMoves)
 {
-	char playerPiece =
-		(getCurrentPlayer(model) == PLAYER_WHITE)
-		? PIECE_WHITE
-		: PIECE_BLACK;
-	char opponentPiece = (playerPiece == PIECE_WHITE)
-		? PIECE_BLACK
-		: PIECE_WHITE;
+    Piece playerPiece =
+        (getCurrentPlayer(model) == PLAYER_WHITE)
+        ? PIECE_WHITE
+        : PIECE_BLACK;
+    Piece opponentPiece = (playerPiece == PIECE_WHITE)
+        ? PIECE_BLACK
+        : PIECE_WHITE;
 
+    //validMoves.clear();
     for (int y = 0; y < BOARD_SIZE; y++)
     {
         for (int x = 0; x < BOARD_SIZE; x++)
@@ -126,7 +127,7 @@ void getValidMoves(GameModel& model, Moves& validMoves)
                 for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
                     int i = 1; // para avanzar en la direccion s
                     Square analizedSquare;
-                    char analizedPiece = PIECE_EMPTY;
+                    Piece analizedPiece = PIECE_EMPTY;
 
                     do {
                         switch (s) {
@@ -161,8 +162,8 @@ void getValidMoves(GameModel& model, Moves& validMoves)
                             break;
                         }
                         i++;
-                    } while ( isSquareValid(analizedSquare) &&
-                              (analizedPiece = getBoardPiece(model, analizedSquare)) == opponentPiece);
+                    } while (isSquareValid(analizedSquare) &&
+                        (analizedPiece = getBoardPiece(model, analizedSquare)) == opponentPiece);
 
                     /* me interesa ver si analizedPiece es mia solo si encontre al menos una pieza de mi rival,
                     es decir si avance al menos una vez. Al final de la primera pasada por el do, i=2 */
@@ -274,16 +275,16 @@ char playMove(GameModel& model, Square move)
                     currentGain++;
 
                 }
+                for (int i = 0; i < 8; ++i) {
+                    for (int j = 0; j < 8; ++j) {
+						printf("%d \t", model.board[i][j]);
+                    }
+					printf("\n");
+                }
+                printf("\n"); printf("\n"); printf("\n");
             }
 
-            for (int i = 1; (analizedPiece = getBoardPiece(model, { move.x - i, move.y - i })) == opponentPiece &&
-                isSquareValid({ move.x - i, move.y - i });
-                i++);
 
-            if (isSquareValid({ move.x - i, move.y - i }) && analizedPiece == playerPiece && i > 1)
-                for (int t = 1; t != i; ++t) {
-                    setBoardPiece(model, { move.x - t, move.y - t }, playerPiece);
-                }
         }
 
         // Swap player
@@ -299,6 +300,6 @@ char playMove(GameModel& model, Square move)
         if (validMoves.size() == 0)
             model.gameOver = true;
 
-        return true;
+        return currentGain;
     }
 }

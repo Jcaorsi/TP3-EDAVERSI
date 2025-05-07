@@ -65,7 +65,7 @@ Square getBestMove(GameModel& model)
     {
         nodeStack.top()->inProcess = true;
         /* un nodo se considera inProcess cuando su vector de validMoves esta siendo estudiado es decir cuando se estan
-       recorriendo sus nodos hijos */
+      recorriendo sus nodos hijos */
         if (nodeStack.top()->validMoves.empty())
         {
             returning = true;
@@ -149,9 +149,9 @@ Square getBestMove(GameModel& model)
     return bestMove;
     // +++ TEST
     // Returns a random valid move...
-/*    Moves validMoves;*/
-   // getValidMoves(model, validMoves);
-    //int index = rand() % validMoves.size();
-   // return validMoves[index];
-    // --- TEST
+ /*   Moves validMoves;
+    getValidMoves(model, validMoves);
+    int index = rand() % validMoves.size();
+    return validMoves[index];
+    // --- TEST*/
 }
