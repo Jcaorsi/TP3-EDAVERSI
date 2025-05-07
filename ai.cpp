@@ -96,8 +96,8 @@ Square getBestMove(GameModel& model)
             TreeNode* auxNode = nodeStack.top(); //auxNode tiene el hijo
             nodeStack.pop();
             nodeStack.top()->primerHijo = NULL;
-            if (auxNode->level % 2)
-            {                        //Caso impar. Nodo final (auxNode) es MAX y el padre (nodeStack.top) es MIN
+            if (auxNode->level % 2) // Caso impar
+            {
                 // si el del padre es menor q el del hijo, se lo asigna
                 auxNode->aiGain = -1 * auxNode->currentGain;
                 if (nodeStack.top()->aiGain > auxNode->aiGain)
@@ -107,12 +107,10 @@ Square getBestMove(GameModel& model)
                 }
 
                 if (nodeStack.top()->alpha >= nodeStack.top()->beta)
-                {
-                    nodeStack.top()->level = nodeStack.top()->level > 1 ? nodeStack.top()->level = MAX_LEVELS : 1;
-                }
+                    nodeStack.top()->level = (nodeStack.top()->level > 1) ? nodeStack.top()->level = MAX_LEVELS : 1;
             }
-            else
-            {                       //Caso par. Nodo final (auxNode) es MIN y el padre (nodeStack.top) es MAX
+            else // Caso par
+            {
                 auxNode->aiGain = auxNode->currentGain;
                 if (nodeStack.top()->aiGain < auxNode->aiGain)
                 {
@@ -121,15 +119,10 @@ Square getBestMove(GameModel& model)
                     nodeStack.top()->alpha = auxNode->aiGain;
 
                     if (nodeStack.top()->level == 1)
-                    {
                         bestMove = primordialMove;
-                    }
 
-                    if (nodeStack.top()->beta >= nodeStack.top()->alpha)
-                    {
-                        //nodeStack.top()->level = nodeStack.top()->level > 1 ? MAX_LEVELS : 1; //REVISAR
-
-                    }
+                    if (nodeStack.top()->alpha >= nodeStack.top()->beta)
+                        nodeStack.top()->level = (nodeStack.top()->level > 1) ? nodeStack.top()->level = MAX_LEVELS : 1;
                 }
             }
             delete auxNode;
