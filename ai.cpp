@@ -48,6 +48,7 @@ Square getBestMove(GameModel& model)
 {
     std::stack<TreeNode*> nodeStack;
 
+    bool returning = false;
     //std::vector<Square> validMoves;
     TreeNode rootNode(model, MINUS_INFINITY, PLUS_INFINITY, nullptr, 1, 0, 0, false);
 
@@ -65,8 +66,11 @@ Square getBestMove(GameModel& model)
         nodeStack.top()->inProcess = true;
         /* un nodo se considera inProcess cuando su vector de validMoves esta siendo estudiado es decir cuando se estan
        recorriendo sus nodos hijos */
-
-        if (nodeStack.top()->level != MAX_LEVELS && !nodeStack.top()->validMoves.empty())
+        if (nodeStack.top()->validMoves.empty())
+        {
+            returning = true;
+        }
+        if (nodeStack.top()->level != MAX_LEVELS && !returning)
         {
             move = nodeStack.top()->validMoves.back();
             // move = el ultimo validMove del ultimo nodo pusheado
@@ -85,47 +89,57 @@ Square getBestMove(GameModel& model)
             nodeStack.top()->currentGain = playMove(nodeStack.top()->model, move) + 1;
             //Mas uno porque cuento las volteadas Y la colocada
 
-            if (!nodeStack.top()->inProcess) // genera validMoves aunque este en un nodo hoja (no afecta la logica del codigo, solo es algo mas complejo computacionalmente)
+            if (!nodeStack.top()->inProcess && nodeStack.top()->level != MAX_LEVELS) // genera validMoves aunque este en un nodo hoja (no afecta la logica del codigo, solo es algo mas complejo computacionalmente)
             {
                 nodeStack.top()->validMoves.clear();
                 getValidMoves(nodeStack.top()->model, nodeStack.top()->validMoves);
             }
         }
-        else if (nodeStack.top()->level == MAX_LEVELS || nodeStack.top()->validMoves.empty())
+        else if (nodeStack.top()->level == MAX_LEVELS || returning)
         {
-            TreeNode* auxNode = nodeStack.top(); //auxNode tiene el hijo
-            nodeStack.pop();
-            nodeStack.top()->primerHijo = NULL;
-            if (auxNode->level % 2) // Caso impar
+            returning = false;
+            if (nodeStack.top()->level != 1)
             {
-                // si el del padre es menor q el del hijo, se lo asigna
-                auxNode->aiGain = -1 * auxNode->currentGain;
-                if (nodeStack.top()->aiGain > auxNode->aiGain)
+                TreeNode* auxNode = nodeStack.top(); //auxNode tiene el hijo
+                nodeStack.pop();
+                nodeStack.top()->primerHijo = NULL;
+                if (auxNode->level % 2) // Caso impar
                 {
-                    nodeStack.top()->aiGain = auxNode->aiGain;
-                    nodeStack.top()->beta = auxNode->aiGain;
+                    // si el del padre es menor q el del hijo, se lo asigna
+					auxNode->aiGain = -1 * auxNode->currentGain;
+					if (nodeStack.top()->aiGain > auxNode->aiGain)
+					{
+						nodeStack.top()->aiGain = auxNode->aiGain;
+						nodeStack.top()->beta = auxNode->aiGain;
+
+						if (nodeStack.top()->alpha >= nodeStack.top()->beta)
+							returning = true;
+					}
+				}
+				else // Caso par
+				{
+					auxNode->aiGain = auxNode->currentGain;
+					if (nodeStack.top()->aiGain < auxNode->aiGain)
+					{
+						// si aiGain del hijo es mayor q el del padre, entonces se guarda el aiGain del hijo en del padre
+						nodeStack.top()->aiGain = auxNode->aiGain;
+						nodeStack.top()->alpha = auxNode->aiGain;
+
+						if (nodeStack.top()->level == 1)
+							bestMove = primordialMove;
+
+						if (nodeStack.top()->alpha >= nodeStack.top()->beta)
+							returning = true;
+
+                    }
                 }
 
-                if (nodeStack.top()->alpha >= nodeStack.top()->beta)
-                    nodeStack.top()->level = (nodeStack.top()->level > 1) ? nodeStack.top()->level = MAX_LEVELS : 1;
+                delete auxNode;
             }
-            else // Caso par
+            else
             {
-                auxNode->aiGain = auxNode->currentGain;
-                if (nodeStack.top()->aiGain < auxNode->aiGain)
-                {
-                    // si aiGain del hijo es mayor q el del padre, entonces se guarda el aiGain del hijo en del padre
-                    nodeStack.top()->aiGain = auxNode->aiGain;
-                    nodeStack.top()->alpha = auxNode->aiGain;
-
-                    if (nodeStack.top()->level == 1)
-                        bestMove = primordialMove;
-
-                    if (nodeStack.top()->alpha >= nodeStack.top()->beta)
-                        nodeStack.top()->level = (nodeStack.top()->level > 1) ? nodeStack.top()->level = MAX_LEVELS : 1;
-                }
+                nodeStack.pop();
             }
-            delete auxNode;
 
         }
 
