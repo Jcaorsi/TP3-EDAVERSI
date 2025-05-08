@@ -12,7 +12,7 @@
 #include <stack>
 #include <algorithm>
 
-#define MAX_LEVELS 4
+#define MAX_LEVELS 13
 #define MINUS_INFINITY -100
 #define PLUS_INFINITY 100
 
@@ -106,43 +106,27 @@ Square getBestMove(GameModel& model)
                 if (auxNode->level % 2) // Caso impar
                 {
                     // si el del padre es menor q el del hijo, se lo asigna
-					auxNode->aiGain = -1 * auxNode->currentGain;
-					if (nodeStack.top()->aiGain > auxNode->aiGain)
-					{
-						nodeStack.top()->aiGain = auxNode->aiGain;
-						nodeStack.top()->beta = auxNode->aiGain;
+                    auxNode->aiGain = -1 * auxNode->currentGain;
+                    if (nodeStack.top()->aiGain > auxNode->aiGain)
+                        nodeStack.top()->aiGain = auxNode->aiGain;
+                }
+                else // Caso par
+                {
+                    auxNode->aiGain = auxNode->currentGain;
+                    if (nodeStack.top()->aiGain < auxNode->aiGain)
+                    {
+                        // si aiGain del hijo es mayor q el del padre, entonces se guarda el aiGain del hijo en del padre
+                        nodeStack.top()->aiGain = auxNode->aiGain;
 
-						if (nodeStack.top()->alpha >= nodeStack.top()->beta)
-							returning = true;
-					}
-				}
-				else // Caso par
-				{
-					auxNode->aiGain = auxNode->currentGain;
-					if (nodeStack.top()->aiGain < auxNode->aiGain)
-					{
-						// si aiGain del hijo es mayor q el del padre, entonces se guarda el aiGain del hijo en del padre
-						nodeStack.top()->aiGain = auxNode->aiGain;
-						nodeStack.top()->alpha = auxNode->aiGain;
-
-						if (nodeStack.top()->level == 1)
-							bestMove = primordialMove;
-
-						if (nodeStack.top()->alpha >= nodeStack.top()->beta)
-							returning = true;
-
+                        if (nodeStack.top()->level == 1)
+                            bestMove = primordialMove;
                     }
                 }
-
                 delete auxNode;
             }
             else
-            {
                 nodeStack.pop();
-            }
-
         }
-
     }
 
 

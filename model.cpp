@@ -34,7 +34,7 @@ void startModel(GameModel &model)
 {
     model.gameOver = false;
 
-    model.currentPlayer = PLAYER_BLACK;
+    model.currentPlayer = PLAYER_WHITE;
 
     model.playerTime[0] = 0;
     model.playerTime[1] = 0;
@@ -275,13 +275,7 @@ char playMove(GameModel& model, Square move)
                     currentGain++;
 
                 }
-                for (int i = 0; i < 8; ++i) {
-                    for (int j = 0; j < 8; ++j) {
-						printf("%d \t", model.board[i][j]);
-                    }
-					printf("\n");
-                }
-                printf("\n"); printf("\n"); printf("\n");
+                
             }
 
 
