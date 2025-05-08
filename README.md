@@ -89,6 +89,16 @@ las mismas.
 
 En nuestro caso lo que se implementó dessde un principio fue la poda alpha-beta.
 
+Para verificar el funcionamiento de la poda alfa-beta, probamos el mismo código sin la poda vs con 
+la poda. Cuando lo ejecutábamos sin la poda, se trababa mucho más rápido que con la misma, lo cual
+indica que los datos procesados con la poda son menores y la complejidad computacional es menor,
+como es de esperar en un funcionamiento correcto de la misma.
+Luego, utilizamos el debugger y observamos detalladamente los valores de puntajes, alfa y beta en 
+cada nodo generado. Se adjunta foto de los apuntes tomados durante dicho análisis:
+![alfa-beta_1](https://github.com/user-attachments/assets/fd351525-dede-481c-aa34-e0888f3a25e7)
+![alfa-beta_2](https://github.com/user-attachments/assets/2ce07018-48f5-412a-99b5-f747a5811b8b)
+![alfa-beta_3](https://github.com/user-attachments/assets/539c0dd3-af75-4dfb-baf1-d85458e6bf66)
+![alfa-beta_4](https://github.com/user-attachments/assets/2a409a87-2f18-4ca2-8f0c-6d77a19b37e0)
 
 ## Resumen
 
