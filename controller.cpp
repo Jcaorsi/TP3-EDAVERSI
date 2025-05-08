@@ -1,6 +1,8 @@
 /**
  * @brief Implements the Reversi game controller
  * @author Marc S. Ressl
+ * @author Juan Ignacio Caorsi
+ * @author Rita Moschini
  *
  * @copyright Copyright (c) 2023-2024
  */

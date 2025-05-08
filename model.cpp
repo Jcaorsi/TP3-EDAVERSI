@@ -1,6 +1,8 @@
 /**
  * @brief Implements the Reversi game model
  * @author Marc S. Ressl
+ * @author Juan Ignacio Caorsi
+ * @author Rita Moschini
  *
  * @copyright Copyright (c) 2023-2024
  */
@@ -107,25 +109,15 @@ void getValidMoves(GameModel& model, Moves& validMoves)
         ? PIECE_BLACK
         : PIECE_WHITE;
 
-    //validMoves.clear();
-    for (int y = 0; y < BOARD_SIZE; y++)
-    {
-        for (int x = 0; x < BOARD_SIZE; x++)
-        {
+    for (int y = 0; y < BOARD_SIZE; y++) {
+        for (int x = 0; x < BOARD_SIZE; x++) {
             Square move = { x, y };
-
-            /*
-            Si la pieza actual esta vacia, se fija en las de alrededor a ver si hay alguna del oponente. Si la encuentra,
-            avanza en esa direccion (determinada por el switch) siempre y cuando encuentre fichas del oponente. El lugar
-            vacio analizado resulta ser valido si despues de fichas del oponente encuentra una ficha del jugador de turno.
-            */
 
             if (getBoardPiece(model, move) == PIECE_EMPTY) {
 
-                /* s de surroundings pues busca fichas del oponente en los "alrededores" d la ficha actual (usamos la letra
-                y no la palabra entera porque es un indice para recorrer otra cosa) */
                 for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
-                    int i = 1; // para avanzar en la direccion s
+                
+                    int i = 1;
                     Square analizedSquare;
                     Piece analizedPiece = PIECE_EMPTY;
 
@@ -165,12 +157,9 @@ void getValidMoves(GameModel& model, Moves& validMoves)
                     } while (isSquareValid(analizedSquare) &&
                         (analizedPiece = getBoardPiece(model, analizedSquare)) == opponentPiece);
 
-                    /* me interesa ver si analizedPiece es mia solo si encontre al menos una pieza de mi rival,
-                    es decir si avance al menos una vez. Al final de la primera pasada por el do, i=2 */
-                    if (analizedPiece == playerPiece && i > 2)
-                    {
+                    if (analizedPiece == playerPiece && i > 2) {
                         validMoves.push_back(move);
-                        break; //para que salga del for y avance a evaluar el siguiente square
+                        break;
                     }
                 }
             }
@@ -196,10 +185,8 @@ char playMove(GameModel& model, Square move)
         Square analizedSquare;
         char analizedPiece = PIECE_EMPTY;
 
-        /* recorre s de surroundings a partir de un lugar vacio, avanza "en la direccion d las piezas
-    del oponente" */
         for (int s = UPPER_LEFT; s <= LOWER_RIGHT; s++) {
-            int i = 1; // para avanzar en la direccion s
+            int i = 1;
 
             do {
                 switch (s) {
@@ -274,26 +261,16 @@ char playMove(GameModel& model, Square move)
                     }
                     currentGain++;
 
-                }
-                for (int i = 0; i < 8; ++i) {
-                    for (int j = 0; j < 8; ++j) {
-						printf("%d \t", model.board[i][j]);
-                    }
-					printf("\n");
-                }
-                printf("\n"); printf("\n"); printf("\n");
+                }    
             }
 
 
         }
 
-        // Swap player
         model.currentPlayer =
             (model.currentPlayer == PLAYER_WHITE)
             ? PLAYER_BLACK
             : PLAYER_WHITE;
-
-        // Game over?
         Moves validMoves;
         getValidMoves(model, validMoves);
 
