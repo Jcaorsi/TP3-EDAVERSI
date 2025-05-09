@@ -10,12 +10,12 @@
 
 #include "model.h"
 
-/**
- * @brief Updates the game view.
- *
- * @param The game model.
- * @return Should the view be closed?
- */
-bool updateView(GameModel &model);
+ /**
+  * @brief Updates the game view.
+  *
+  * @param The game model.
+  * @return Should the view be closed?
+  */
+bool updateView(GameModel& model);
 
 #endif

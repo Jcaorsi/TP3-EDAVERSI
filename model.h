@@ -17,15 +17,15 @@
 
 enum Player
 {
-    PLAYER_BLACK,
-    PLAYER_WHITE,
+	PLAYER_BLACK,
+	PLAYER_WHITE,
 };
 /*
 enum Pieces
 {
-    PIECE_EMPTY,
-    PIECE_BLACK,
-    PIECE_WHITE,
+	PIECE_EMPTY,
+	PIECE_BLACK,
+	PIECE_WHITE,
 };*/
 #define PIECE_EMPTY 0
 #define PIECE_BLACK 1
@@ -33,27 +33,27 @@ enum Pieces
 /*
 //Obtuvimos informaci�n sobre la sobrecarga de operadores en C++ en: https://www.geeksforgeeks.org/operator-overloading-cpp/
 struct Piece{
-    char gamePiece;
+	char gamePiece;
 
-    bool operator==(int v) const {
-        return gamePiece == static_cast<char>(v);
-    }
+	bool operator==(int v) const {
+		return gamePiece == static_cast<char>(v);
+	}
 
-    bool operator!=(int v) const {
-        return !(*this == v);
-    }
+	bool operator!=(int v) const {
+		return !(*this == v);
+	}
 
-    Piece& operator=(int v) {
-        gamePiece = static_cast<char>(v);
-        return *this;
-    }
+	Piece& operator=(int v) {
+		gamePiece = static_cast<char>(v);
+		return *this;
+	}
 
 } ;*/
 
 struct Square
 {
-    int x;
-    int y;
+	int x;
+	int y;
 };
 
 #define GAME_INVALID_SQUARE \
@@ -63,16 +63,16 @@ struct Square
 
 struct GameModel
 {
-    bool gameOver;
+	bool gameOver;
 
-    Player currentPlayer;
+	Player currentPlayer;
 
-    double playerTime[2];
-    double turnTimer;
+	double playerTime[2];
+	double turnTimer;
 
-    char board[BOARD_SIZE][BOARD_SIZE];
+	char board[BOARD_SIZE][BOARD_SIZE];
 
-    Player humanPlayer;
+	Player humanPlayer;
 };
 
 typedef std::vector<Square> Moves;

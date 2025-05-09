@@ -10,9 +10,9 @@
 
 #include "model.h"
 
-/**
- * @brief Initializes a game view.
- */
+ /**
+  * @brief Initializes a game view.
+  */
 void initView();
 
 /**
@@ -25,7 +25,7 @@ void freeView();
  *
  * @param model The game model.
  */
-void drawView(GameModel &model);
+void drawView(GameModel& model);
 
 /**
  * @brief Returns the square over the mouse pointer.

@@ -16,7 +16,6 @@
 
 static void updateTimer(GameModel& model)
 {
-    // Update player timer
     double currentTime = GetTime();
     model.playerTime[model.currentPlayer] += currentTime - model.turnTimer;
     model.turnTimer = currentTime;
@@ -49,7 +48,6 @@ bool updateView(GameModel &model)
     {
         if (IsMouseButtonPressed(0))
         {
-            // Human player
             Square square = getSquareOnMousePointer();
 
             if (isSquareValid(square))
@@ -57,7 +55,6 @@ bool updateView(GameModel &model)
                 Moves validMoves;
                 getValidMoves(model, validMoves);
 
-                // Play move if valid
                 for (auto move : validMoves)
                 {
                     if ((square.x == move.x) &&
@@ -71,8 +68,6 @@ bool updateView(GameModel &model)
     }
     else
     {
-        // AI player
-        WaitTime(0.5);
         Square square = getBestMove(model);
 
         playMove(model, square);

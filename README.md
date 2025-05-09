@@ -5,13 +5,11 @@
 * Rita Moschini: construcción de getValidMoves, debuggueo de getBestMove con poda  alfa-beta, 
                  poda por cantidad de donos, README y guía de estilo.
 
-* * Juan I. Caorsi: construcción de getValidMoves, construcción de getBestMove con poda alfa-beta,
+* Juan I. Caorsi: construcción de getValidMoves, construcción de getBestMove con poda alfa-beta,
                  poda por profundidad, README y guía de estilo.
 
 
 ## Parte 1: Generación de movimientos válidos y algoritmo de jugada
-
-[Enumera aquí las pruebas que hiciste para validar que tu generador de movimientos válidos y algoritmo de jugada funcionan correctamente.]
 
 Para completar el vector con los movimientos válidos, se recorren todos los lugares del tablero. 
 Al encontrar un lugar vacío, busca en los 8 lugares que lo rodean una pieza del oponente. Si la
@@ -103,32 +101,46 @@ cada nodo generado. Se adjunta foto de los apuntes tomados durante dicho anális
 ## Resumen
 
 Pasos seguidos:
-* Implementación de mecanica del juego (armado de getValidMoves() y playMove()): se aplican procedimientos usuales para la determinación de las posiciones válidas,
-las cuales varían según el juegador actual y se calculan recorriendo toda la matriz de juego buscando espacios vacíos, válidos, en los que si se coloca
-la pieza del jugador, se puede voltear alguna pieza del oponente. En playMove() se aplica el mismo procedimiento solo que en este caso se exploran las posiciones
-de la grilla en torno a la jugada realizada, cadenas de fichas del oponente que hayan sido encerradas por la que colocó el jugador en el instante anterior.
 
-* Implementación getBestmove(): se añade la generación de un árbol del tipo nodos con punteros a hijo (pronto explicaré que es suficiente con que cada nodo
-cuente con un solo puntero a UN solo hijo). Primero definimos la clase TreeNode, que contendrá la información que consideramos necesaria para la generación de
-los nodos hijos como también un método agregarHijo(), dedicado principalmente a evasión de errores en la programación en caso de una próxima implementación.
+Implementación de mecanica del juego (armado de getValidMoves() y playMove()): se aplican 
+procedimientos usuales para la determinación de las posiciones válidas, las cuales varían según 
+el juegador actual y se calculan recorriendo toda la matriz de juego buscando espacios vacíos, 
+válidos, en los que si se coloca la pieza del jugador, se puede voltear alguna pieza del oponente
+. En playMove() se aplica el mismo procedimiento solo que en este caso se exploran las posiciones
+de la grilla en torno a la jugada realizada, cadenas de fichas del oponente que hayan sido 
+encerradas por la que colocó el jugador en el instante anterior.
 
-Una vez hecho esto, pensando en una lógica iterativa nos dedicamos a desarrollar la función que nos devolverá la jugada óptima según el algoritmo minimax.
-Se utiliza un stack para el guardado de los punteros a los nodos cuyos hijos se están explorando, uno por uno, jugada válida por jugada válida. 
-Se puede pensar que el recorrido/armado de árbol en principio tiene una lógica de DFS, condicionado a la altura máxima que puede alcanzar el árbol.
+Implementación getBestmove(): se añade la generación de un árbol del tipo nodos con punteros a 
+hijo (pronto explicaré que es suficiente con que cada nodo cuente con un solo puntero a UN solo 
+hijo). Primero definimos la clase TreeNode, que contendrá la información que consideramos 
+necesaria para la generación de los nodos hijos como también un método agregarHijo(), dedicado 
+principalmente a evasión de errores en la programación en caso de una próxima implementación.
 
-En un principio se prepara el nodo raiz, y luego de crearlo e inicializarlo como corresponde, el programa entra en un ciclo, con una referencia al nodo raiz en stack.
-En cada iteración, se explora el primer hijo del nodo cuya referencia se encuentra sobre la pila (último puntero añadido), formado a partir de la primer 
-jugada que se realiza desde la situación actual del juego. De esta forma se van creando uno por uno los hijos de la primer jugada válida del nodo raiz,
-de la primera del hijo de la raiz, etcétera. Hasta que se alcanza o un final (no más jugadas válidas para jugar) o un nodo hoja (nivel del nodo máximo).
-Una vez alcanzado este nivel, comienza el proceso de minimaz y la poda alfa beta. En ese punto ya no queremos apilar más punteros, así que se visitan los nodos hoja.
-Acá se preguntarán qué pasa si los nodos hoja son varios y no uno como el creado. Resulta que una vez visitado y comparado los valores de 
-ganancia (aiGain que viajará por minimax) y alfa y beta, del nodo hoja creado con su nodo madre, se elimina el puntero al hoja del stack y se libera su memoria.
-Luego se vuelve a crear el próximo hijo del nodo de altura máxima menos uno, que existirá y será visitado y eliminado de la misma forma que su nodo hermano
-anterior. 
-De esta forma cada vez que tomamos una "foto"" del arbol veremos que tiene forma de lista, pero que irá cambiando de forma a medida que avace la ejecución.
+Una vez hecho esto, pensando en una lógica iterativa nos dedicamos a desarrollar la función que 
+nos devolverá la jugada óptima según el algoritmo minimax. Se utiliza un stack para el guardado 
+de los punteros a los nodos cuyos hijos se están explorando, uno por uno, jugada válida por 
+jugada válida. Se puede pensar que el recorrido/armado de árbol en principio tiene una lógica de 
+DFS, condicionado a la altura máxima que puede alcanzar el árbol.
 
-Una vez que se termina de evaluar cada nodo y solo tenemos el nodo raiz en el stack, salimos del ciclo y devolvemos la movida seleccionada por el algoritmo minimax,
-que fue guardada en la variable bestMove.
+En un principio se prepara el nodo raiz, y luego de crearlo e inicializarlo como corresponde, el 
+programa entra en un ciclo, con una referencia al nodo raiz en stack. En cada iteración, se 
+explora el primer hijo del nodo cuya referencia se encuentra sobre la pila (último puntero 
+añadido), formado a partir de la primer jugada que se realiza desde la situación actual del juego.
+De esta forma se van creando uno por uno los hijos de la primer jugada válida del nodo raiz, de 
+la primera del hijo de la raiz, etcétera. Hasta que se alcanza o un final (no más jugadas válidas 
+para jugar) o un nodo hoja (nivel del nodo máximo). Una vez alcanzado este nivel, comienza el 
+proceso de minimaz y la poda alfa beta. En ese punto ya no queremos apilar más punteros, así que 
+se visitan los nodos hoja. Acá se preguntarán qué pasa si los nodos hoja son varios y no uno como 
+el creado. Resulta que una vez visitado y comparado los valores de ganancia (aiGain que viajará 
+por minimax) y alfa y beta, del nodo hoja creado con su nodo madre, se elimina el puntero al hoja 
+del stack y se libera su memoria. Luego se vuelve a crear el próximo hijo del nodo de altura 
+máxima menos uno, que existirá y será visitado y eliminado de la misma forma que su nodo hermano
+anterior. De esta forma cada vez que tomamos una "foto"" del arbol veremos que tiene forma de 
+lista, pero que irá cambiando de forma a medida que avace la ejecución.
+
+Una vez que se termina de evaluar cada nodo y solo tenemos el nodo raiz en el stack, salimos del 
+ciclo y devolvemos la movida seleccionada por el algoritmo minimax, que fue guardada en la 
+variable bestMove.
 
 
 ## Comentarios adicionales

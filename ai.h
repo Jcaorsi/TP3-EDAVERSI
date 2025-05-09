@@ -10,11 +10,11 @@
 
 #include "model.h"
 
-/**
- * @brief Returns the best move for a certain position.
- *
- * @return The best move.
- */
-Square getBestMove(GameModel &model);
+ /**
+  * @brief Returns the best move for a certain position.
+  *
+  * @return The best move.
+  */
+Square getBestMove(GameModel& model);
 
 #endif
